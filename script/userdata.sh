@@ -74,13 +74,9 @@ install_tools(){
     sudo yum -y install bash-completion moreutils yum-utils 
 
     #   install latest terraform binary
-    cd $HOME_DIR
-    mkdir terraform 
-    cd $HOME_DIR/terraform
-    wget https://releases.hashicorp.com/terraform/1.4.0/terraform_1.4.0_linux_386.zip && 
-    unzip terraform_1.4.0_linux_386.zip ./w
-    rm terraform_1.4.0_linux_386.zip
-    mv terraform /usr/local/bin
+    echo ">>> install terraform"
+    echo `sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo`
+    echo `sudo yum -y install terraform`
 
     # Update awscli v1, just in case it's required
     pip install --user --upgrade awscli
