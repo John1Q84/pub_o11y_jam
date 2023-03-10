@@ -32,20 +32,13 @@ main() {
     sleep=0
     while true; do
         install_tools &&
-        git_init &&
+        git_init 
         # run_terraform &&
         break
     done
     echo 'initializing complete !!'
     exit 0
 
-}
-
-get_tags() {
-    echo 'Get tags' 
-    query="Reservations[*].Instances[*].[Tags[?Key=='service_name'].Value | [0]]"
-    export service_name=`aws ec2 describe-instances --instance-id $INSTANCE_ID --region $REGION --query "$query" --out text`
-    echo 'Tag name "service_name" is,' && echo "$service_name"
 }
 
 install_tools(){
@@ -61,8 +54,10 @@ install_tools(){
     sudo yum -y install bash-completion moreutils yum-utils
 
     #   install latest terraform binary
-    sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo 
-    sudo yum -y install terraform
+    wget https://releases.hashicorp.com/terraform/1.4.0/terraform_1.4.0_linux_386.zip && 
+    unzip terraform_1.4.0_linux_386.zip ./ &&
+    rm terraform_1.4.0_linux_386.zip
+    mv terraform /usr/local/bin
 
     # Update awscli v1, just in case it's required
     pip install --user --upgrade awscli
@@ -82,7 +77,8 @@ install_tools(){
 
 git_init(){
     echo '>> git init step'
-    yum install git -y
+    sudo yum history new
+    sudo yum install git -y
     cd $HOME_DIR
     if [ -d $HOME_DIR/pub_o11y_jam ] ; then
         echo 'remove old git info'
