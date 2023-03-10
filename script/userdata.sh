@@ -71,14 +71,14 @@ install_tools(){
     #   bash-completion: supports command name auto-completion for supported commands
     #   moreutils: a growing collection of the unix tools that nobody thought to write long ago when unix was young
     #   yum-utils: a prerequisite to install terraformn binary
-    sudo yum -y install bash-completion moreutils yum-utils
+    sudo yum -y install bash-completion moreutils yum-utils 
 
     #   install latest terraform binary
     cd $HOME_DIR
     mkdir terraform 
     cd $HOME_DIR/terraform
     wget https://releases.hashicorp.com/terraform/1.4.0/terraform_1.4.0_linux_386.zip && 
-    unzip terraform_1.4.0_linux_386.zip ./ &&
+    unzip terraform_1.4.0_linux_386.zip ./w
     rm terraform_1.4.0_linux_386.zip
     mv terraform /usr/local/bin
 
