@@ -1,3 +1,23 @@
+Content-Type: multipart/mixed; boundary="//"
+MIME-Version: 1.0
+
+--//
+Content-Type: text/cloud-config; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="cloud-config.txt"
+
+#cloud-config
+cloud_final_modules:
+- [scripts-user, always]
+
+--//
+Content-Type: text/x-shellscript; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="userdata.txt"
+
+
 #!/bin/bash
 set -e
 
@@ -54,6 +74,9 @@ install_tools(){
     sudo yum -y install bash-completion moreutils yum-utils
 
     #   install latest terraform binary
+    cd $HOME_DIR
+    mkdir terraform 
+    cd $HOME_DIR/terraform
     wget https://releases.hashicorp.com/terraform/1.4.0/terraform_1.4.0_linux_386.zip && 
     unzip terraform_1.4.0_linux_386.zip ./ &&
     rm terraform_1.4.0_linux_386.zip
@@ -97,3 +120,6 @@ run_terraform(){
 
 
 main
+
+
+--//
