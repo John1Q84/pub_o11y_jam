@@ -5,18 +5,38 @@ echo 'get temporary token for metedata'
 TOKEN=`curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"`
 echo ''
 
+# echo '>> Get Region ....'
+# export REGION=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/dynamic/instance-identity/document/ | grep region | cut -d \" -f 4`
+# echo $REGION && echo ''
+
+# echo '>> Get instance id ....'
+# export INSTANCE_ID=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/dynamic/instance-identity/document/ | grep instanceId | cut -d \" -f 4`
+# echo $INSTANCE_ID && echo ''
+
+# echo '>> Set AWS Credential for terraform ....'
+# export AWS_ACCESS_KDY_ID=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance/  |grep AccessKeyId | cut -d \" -f 4`
+# export AWS_SECRET_ACCESS_KEY=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance/  |grep SecretAccessKey | cut -d \" -f 4`
+# echo $AWS_ACCESS_KDY_ID && echo ''
+
+# export ng_public03=10.11.40.87
+# echo "export ng_public01=${ng_public01}" | tee -a ~/.bash_profile
+
 echo '>> Get Region ....'
 export REGION=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/dynamic/instance-identity/document/ | grep region | cut -d \" -f 4`
+echo "export REGION=${REGION}" >> ~/.bash_profile 
 echo $REGION && echo ''
 
 echo '>> Get instance id ....'
 export INSTANCE_ID=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/dynamic/instance-identity/document/ | grep instanceId | cut -d \" -f 4`
+echo "export INSTANCE_ID=${INSTANCE_ID}" >> ~/.bash_profile 
 echo $INSTANCE_ID && echo ''
 
 echo '>> Set AWS Credential for terraform ....'
 export AWS_ACCESS_KDY_ID=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance/  |grep AccessKeyId | cut -d \" -f 4`
 export AWS_SECRET_ACCESS_KEY=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance/  |grep SecretAccessKey | cut -d \" -f 4`
-echo $INSTANCE_ID && echo ''
+echo "export AWS_ACCESS_KDY_ID=${AWS_ACCESS_KDY_ID}" >> ~/.bash_profile 
+echo "export INSTANCAWS_SECRET_ACCESS_KEYE_ID=${INSTANCAWS_SECRET_ACCESS_KEYE_ID}" >> ~/.bash_profile 
+echo $AWS_ACCESS_KDY_ID && echo ''
 
 REPO="https://github.com/John1Q84/pub_o11y_jam.git"
 
