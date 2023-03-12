@@ -33,6 +33,7 @@ main() {
     fi
     echo "/opt/workspace <- home dir"
     export HOME_DIR="/opt/workspace"
+    cd $HOME_DIR
    
     sleep=0
     while true; do
