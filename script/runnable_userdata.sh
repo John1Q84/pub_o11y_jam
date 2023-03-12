@@ -1,23 +1,3 @@
-Content-Type: multipart/mixed; boundary="//"
-MIME-Version: 1.0
-
---//
-Content-Type: text/cloud-config; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment; filename="cloud-config.txt"
-
-#cloud-config
-cloud_final_modules:
-- [scripts-user, always]
-
---//
-Content-Type: text/x-shellscript; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment; filename="userdata.txt"
-
-
 #!/bin/bash
 set -e
 
@@ -30,7 +10,12 @@ export REGION=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169
 echo $REGION && echo ''
 
 echo '>> Get instance id ....'
-INSTANCE_ID=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/dynamic/instance-identity/document/ | grep instanceId | cut -d \" -f 4`
+export INSTANCE_ID=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/dynamic/instance-identity/document/ | grep instanceId | cut -d \" -f 4`
+echo $INSTANCE_ID && echo ''
+
+echo '>> Set AWS Credential for terraform ....'
+export AWS_ACCESS_KDY_ID=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance/  |grep AccessKeyId | cut -d \" -f 4`
+export AWS_SECRET_ACCESS_KEY=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance/  |grep SecretAccessKey | cut -d \" -f 4`
 echo $INSTANCE_ID && echo ''
 
 REPO="https://github.com/John1Q84/pub_o11y_jam.git"
@@ -66,17 +51,17 @@ install_tools(){
     # reset yum history
     sudo yum history new
 
-    # Install jq (json query)
-    sudo yum -y -q install jq
+    
     #   bash-completion: supports command name auto-completion for supported commands
     #   moreutils: a growing collection of the unix tools that nobody thought to write long ago when unix was young
     #   yum-utils: a prerequisite to install terraformn binary
-    sudo yum -y install bash-completion moreutils yum-utils 
+    sudo yum -y install bash-completion moreutils yum-utils jq
 
     #   install latest terraform binary
     echo ">>> install terraform"
-    echo `sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo`
-    echo `sudo yum -y install terraform`
+    sudo yum history new
+    sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+    sudo yum -y install terraform
 
     # Update awscli v1, just in case it's required
     pip install --user --upgrade awscli
