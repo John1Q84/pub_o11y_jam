@@ -35,7 +35,7 @@ echo '>> Set AWS Credential for terraform ....'
 export AWS_ACCESS_KDY_ID=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance/  |grep AccessKeyId | cut -d \" -f 4`
 export AWS_SECRET_ACCESS_KEY=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance/  |grep SecretAccessKey | cut -d \" -f 4`
 echo "export AWS_ACCESS_KDY_ID=${AWS_ACCESS_KDY_ID}" >> ~/.bash_profile 
-echo "export INSTANCAWS_SECRET_ACCESS_KEYE_ID=${INSTANCAWS_SECRET_ACCESS_KEYE_ID}" >> ~/.bash_profile 
+echo "export AWS_SECRET_ACCESS_KEYE_ID=${AWS_SECRET_ACCESS_KEYE_ID}" >> ~/.bash_profile 
 echo $AWS_ACCESS_KDY_ID && echo ''
 
 REPO="https://github.com/John1Q84/pub_o11y_jam.git"
