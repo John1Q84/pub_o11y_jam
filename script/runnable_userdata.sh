@@ -102,6 +102,13 @@ git_init(){
 
 run_terraform(){
     echo '>> terraform init & apply step'    
+    cd $HOME_DIR/pub_o11y_jam
+    if [ -d $HOME_DIR/pub_o11y_jam/.terraforom ] ; then  # `terraform init` command will generate $HOME_DIR/pub_o11y_jam/.terraform directory 
+        terraforom apply -auto-approve
+    else
+        terraform init -input=false
+    fi
+
 }
 
 
