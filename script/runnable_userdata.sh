@@ -83,6 +83,10 @@ install_tools(){
     sudo mv /tmp/kubectl /usr/local/bin
     chmod +x /usr/local/bin/kubectl
 
+    # Install eksctl 
+    curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+    sudo mv /tmp/eksctl /usr/local/bin
+
     echo ' '
     echo '>> end of tool installation'
 
