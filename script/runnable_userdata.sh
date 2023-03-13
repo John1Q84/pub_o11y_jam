@@ -43,7 +43,7 @@ main() {
     while true; do
         install_tools &&
         git_init 
-        # run_terraform &&
+        run_terraform &&
         break
     done
     echo 'initializing complete !!'
