@@ -98,10 +98,10 @@ git_init(){
         rm -rf $HOME_DIR/pub_o11y_jam
     fi
     git init pub_o11y_jam
-    git clone $REPO $HOME_DIR/pub_o11y_jam
-    # cd pub_o11y_jam
-    # git remote add -f origin $REPO
-    # git pull origin main
+    # git clone $REPO $HOME_DIR/pub_o11y_jam
+    cd pub_o11y_jam
+    git remote add -f origin $REPO
+    git pull origin main
     echo ' '
     echo '>> end git init'
 }
