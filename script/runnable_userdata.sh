@@ -103,10 +103,10 @@ git_init(){
 run_terraform(){
     echo '>> terraform init & apply step'    
     cd $HOME_DIR/pub_o11y_jam
-    if [ -d $HOME_DIR/pub_o11y_jam/.terraforom ] ; then  # `terraform init` command will generate $HOME_DIR/pub_o11y_jam/.terraform directory 
-        terraforom plan && terraform apply -auto-approve
+    if [ -d $HOME_DIR/pub_o11y_jam/.terraform ] ; then  # `terraform init` command will generate $HOME_DIR/pub_o11y_jam/.terraform directory 
+        terraform plan && terraform apply -auto-approve
     else
-        terraform init -input=false && terraforom plan && terraform apply -auto-approve
+        terraform init -input=false && terraform plan && terraform apply -auto-approve
     fi
 
 }
