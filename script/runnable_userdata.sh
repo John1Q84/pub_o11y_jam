@@ -42,8 +42,9 @@ main() {
     sleep=0
     while true; do
         install_tools &&
-        git_init 
+        git_init &&
         run_terraform &&
+        kube_config &&
         break
     done
     echo 'initializing complete !!'
@@ -82,6 +83,9 @@ install_tools(){
     sudo mv /tmp/kubectl /usr/local/bin
     chmod +x /usr/local/bin/kubectl
 
+    echo ' '
+    echo '>> end of tool installation'
+
 }
 
 git_init(){
@@ -98,11 +102,12 @@ git_init(){
     # cd pub_o11y_jam
     # git remote add -f origin $REPO
     # git pull origin main
+    echo ' '
     echo '>> end git init'
 }
 
 run_terraform(){
-    echo '>> terraform init & apply step'    
+    echo '>> terraform init & apply step ...'    
     cd $HOME_DIR/pub_o11y_jam
     if [ -d $HOME_DIR/pub_o11y_jam/.terraform ] ; then  # `terraform init` command will generate $HOME_DIR/pub_o11y_jam/.terraform directory 
         terraform plan && terraform apply -auto-approve >> tfapply.log
@@ -110,8 +115,19 @@ run_terraform(){
         terraform init -input=false && terraform plan && terraform apply -auto-approve  >> tfapply.log
     fi
     export CLUSTER_NAME=`terraform output | grep eks_cluster_name | cut -d \" -f 2`
-    echo "export CLUSTER_NAME=$CLUSTER_NAME" >> ~/.bash_profile
-
+    echo "export CLUSTER_NAME=$CLUSTER_NAME" >> ~/.bash_profile 
+    echo ' '
+    echo '>> running terraform complete!!'
 }
 
+kube_config(){
+    echo '>> init kubectl configuration ...'
+    echo `aws eks update-kubeconfig --region $REGION --name $CLUSTER_NAME`
+    if [ -d ~/.kube/ ] ; then  # `aws eks update-kubeconfig command generate '~/.kube' directory 
+        echo 'kubectl config init complete'
+    else
+        echo 'init kubectl config failed'
+    fi
+    echo '>> end kube config init'
+}
 main
