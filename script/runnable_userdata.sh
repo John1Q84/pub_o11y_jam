@@ -109,9 +109,9 @@ run_terraform(){
     else
         terraform init -input=false && terraform plan && terraform apply -auto-approve  >> tfapply.log
     fi
+    export CLUSTER_NAME=`terraform output | grep eks_cluster_name | cut -d \" -f 2`
+    echo "export CLUSTER_NAME=$CLUSTER_NAME" >> ~/.bash_profile
 
 }
 
-
 main
-
