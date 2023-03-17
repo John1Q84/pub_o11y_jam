@@ -127,8 +127,23 @@ run_terraform(){
 kube_config(){
     echo '>> init kubectl configuration ...'
     echo `aws eks update-kubeconfig --region $REGION --name $CLUSTER_NAME`
+
     if [ -d ~/.kube/ ] ; then  # `aws eks update-kubeconfig command generate '~/.kube' directory 
         echo 'kubectl config init complete'
+
+        export JAM_LABS_USER_ARN=`aws iam list-roles --query "Roles[?starts_with(RoleName,'AWSLabsUser')].Arn" --output text`
+        echo "export JAM_LABS_USER_ARN=${JAM_LABS_USER_ARN}" >> ~/.bash_profile
+        echo $JAM_LABS_USER_ARN && echo ''
+
+        echo '>> rbac authorization'
+        eksctl create iamidentitymapping \
+        --cluster ${CLUSTER_NAME} \
+        --arn ${JAM_LABS_USER_ARN} \
+        --username cluster-admin-jam-lab-user \
+        --group system:masters \
+        --region ${REGION}
+        echo ''
+        
     else
         echo 'init kubectl config failed'
     fi
