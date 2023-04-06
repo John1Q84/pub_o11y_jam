@@ -41,7 +41,7 @@ module "vpc" {
 }
 
 module "eks_blueprints" {
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.21.0"
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.27.0"
 
   cluster_name              = local.name
   vpc_id                    = module.vpc.vpc_id
