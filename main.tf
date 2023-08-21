@@ -1,6 +1,7 @@
 module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
+  source = "terraform-aws-modules/vpc/aws"
+  #version = "~> 3.0"
+  version = "5.1.1"
 
   name = local.name ## 모든 resource의 Name tag에 추가 됩니다.
   cidr = local.vpc_cidr
@@ -41,7 +42,7 @@ module "vpc" {
 }
 
 module "eks_blueprints" {
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.27.0"
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.32.1"
 
   cluster_name              = local.name
   vpc_id                    = module.vpc.vpc_id
@@ -73,7 +74,8 @@ module "eks_blueprints" {
 
 
 module "kubernetes_addons" {
-  source         = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.27.0/modules/kubernetes-addons"
+  #source         = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.27.0/modules/kubernetes-addons"
+  source         = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.32.1/modules/kubernetes-addons"
   eks_cluster_id = module.eks_blueprints.eks_cluster_id
 
   ## EKS Addons
