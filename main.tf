@@ -49,6 +49,7 @@ module "eks_blueprints" {
   private_subnet_ids        = module.vpc.private_subnets
   cluster_version           = local.cluster_version
   cluster_enabled_log_types = []
+  enable_cluster_encryption = false
 
   map_roles = [
     {
