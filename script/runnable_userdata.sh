@@ -78,9 +78,11 @@ install_tools(){
     sudo ./aws/install
     rm awscliv2.zip
 
-    # Install kubectl v1.24
+    # Install kubectl v1.30
     #curl -o /tmp/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.10/2023-01-30/bin/linux/amd64/kubectl
-    curl -o /tmp/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.29.0/2024-01-04/bin/linux/amd64/kubectl
+    #curl -o /tmp/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.29.0/2024-01-04/bin/linux/amd64/kubectl
+    curl -o /tmp/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.30.0/2024-05-12/bin/linux/amd64/kubectl
+
 
     sudo mv /tmp/kubectl /usr/local/bin
     chmod +x /usr/local/bin/kubectl
