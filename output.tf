@@ -10,5 +10,6 @@ output "vpc_id" {
 
 output "eks_cluster_name" {
   description = "Name of eks cluster"
-  value       = module.eks_blueprints.eks_cluster_id
+  #value       = module.eks_blueprints.eks_cluster_id
+  value = module.eks.cluster_id
 }
