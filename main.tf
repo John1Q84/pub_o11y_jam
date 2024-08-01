@@ -71,8 +71,7 @@ module "eks" {
     }
   }
 
-  enable_cluster_creator_admin_permissions = true
-  cluster_enabled_log_types                = [] ## Controle Plane monitoring 기능 모두 해제
+  cluster_enabled_log_types = [] ## Controle Plane monitoring 기능 모두 해제
 
   tags = {
     Terraform   = "true"
