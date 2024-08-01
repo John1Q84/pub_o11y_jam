@@ -59,19 +59,20 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   eks_managed_node_group_defaults = {
-    instance_types = ["m5.large"]
+    instance_types = ["m6i.large"]
   }
 
   eks_managed_node_groups = {
     sample = {
-      instance_types = ["m5.large"]
+      instance_types = ["m6i.large"]
       min_size       = 2
       max_size       = 5
-      desired_size   = 2
+      desired_size   = 5
     }
   }
 
   enable_cluster_creator_admin_permissions = true
+  cluster_enabled_log_types                = [] ## Controle Plane monitoring 기능 모두 해제
 
   tags = {
     Terraform   = "true"
@@ -83,7 +84,7 @@ module "lb_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "5.41.0"
 
-  role_name                              = "${local.name}_eks_lb"
+  role_name                              = "${local.name}-lb-irsa"
   attach_load_balancer_controller_policy = true
 
   oidc_providers = {
