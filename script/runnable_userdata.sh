@@ -40,30 +40,17 @@ main() {
     cd $HOME_DIR
    
     sleep=0
-    #while true; do
-    #    install_tools &&
-    #    git_init &&
-    #    run_terraform &&
-    #    kube_config &&
-    #    break
-    #done
+        
+    install_tools &&
+    git_init &&
     
-    while true; do
+    ### 수정필요
+    echo ">> terraform 1st phase: Provision VPC & EKS cluster" && echo ""
+    run_terraform_vpc $HOME_DIR/pub_o11y_jam/terraform 
+    kube_config &&
+    run_terraform_alb $HOME_DIR/pub_o11y_jam/terraform/alb 
 
-        install_tools &&
-        git_init &&
-
-        echo ">> terraform 1st phase: Provision VPC & EKS cluster" && echo " " &&
-        run_terraform $HOME_DIR/pub_o11y_jam/terraform &&  
-        
-        kube_config &&
-
-        echo ">> terraform 2nd phase: Provision ALB controller on the EKS cluster" && echo " " &&
-        run_terraform $HOME_DIR/pub_o11y_jam/terraform/alb &&
-        
-        break
-    done
-    echo 'initializing complete !!'
+    echo '>> Initializing complete !!' && echo ""
 
     exit 0
 }
@@ -111,81 +98,66 @@ install_tools(){
 }
 
 git_init(){
-    echo '>> git init step'
+    echo ">> git init step"
     sudo yum history new
     sudo yum install git -y
     cd $HOME_DIR
     if [ -d $HOME_DIR/pub_o11y_jam ] ; then
-        echo 'remove old git info'
+        echo "remove old git info"
         rm -rf $HOME_DIR/pub_o11y_jam
     fi
     git init pub_o11y_jam
     # git clone $REPO $HOME_DIR/pub_o11y_jam
     cd pub_o11y_jam
     git remote add -f origin $REPO
-    git pull origin main
-    echo ' '
-    echo '>> end git init'
+    #git pull origin main
+    if ! git pull origin main; then
+        echo "ERROR: Fail to 'git pull origin main'."
+    fi
+    echo ""
+    echo ">> end git init"
 }
 
 ## old version
-#run_terraform(){
-#    echo '>> terraform init & apply step ...'    
-#    cd $HOME_DIR/pub_o11y_jam
-#    if [ -d $HOME_DIR/pub_o11y_jam/.terraform ] ; then  # `terraform init` command will generate $HOME_DIR/pub_o11y_jam/.terraform directory 
-#        terraform plan && terraform apply -auto-approve > tfapply.log
-#    else
-#        terraform init -input=false && terraform plan && terraform apply -auto-approve  > tfapply.log
-#    fi
-#    export CLUSTER_NAME=`terraform output | grep eks_cluster_name | cut -d \" -f 2`
-#    echo "export CLUSTER_NAME=$CLUSTER_NAME" >> ~/.bash_profile 
-#    echo ' '
-#    echo '>> running terraform complete!!'
-#}
-
-## new version : run_terraform "<PATH>"
-run_terraform(){
+run_terraform_vpc(){
     local dir=$1
-    
-    #echo ">> terraform 1st phase: Provision VPC & EKS cluster" && echo " "
-    #cd $HOME_DIR/pub_o11y_jam/terraform && export WORKING_DIR=$(pwd)
-    cd $dir && export WORKING_DIR=$(pwd)
-    echo ">>> running terraform from $WORKING_DIR" 
-
-    if [ -d $WORKING_DIR/.terraform ] ; then  # `terraform init` command will generate $HOME_DIR/pub_o11y_jam/terraform/.terraform directory
-        (terraform plan && terraform apply -auto-approve) 2>&1 | tee tfapply.log
+    echo '>> terraform init & apply step ...'    
+    #cd $HOME_DIR/pub_o11y_jam/
+    cd $dir
+    if [ -d $dir/.terraform ] ; then  # `terraform init` command will generate $HOME_DIR/pub_o11y_jam/.terraform directory 
+        terraform plan && terraform apply -auto-approve > tfapply_vpc.log
     else
-        (terraform init -input=false && terraform plan && terraform apply -auto-approve ) 2>&1  | tee tfapply.log
+        terraform init -input=false && terraform plan && terraform apply -auto-approve  > tfapply_vpc.log 
     fi
+    echo ""
+    echo '>> running terraform complete!!'
+}
 
-    if [ $? -ne 0 ]; then
-        echo "ERROR: Running terraform at $WORKING_DIR went something wrong. Check the log for details."
-        echo "Last Log: " && echo ""
-        tail -n 10 $WORKING_DIR/tfapply.log
-        return 1
+run_terraform_alb(){
+    local dir=$1
+    echo '>> terraform init & apply step ...'    
+    #cd $HOME_DIR/pub_o11y_jam/
+    cd $dir
+    if [ -d $dir/.terraform ] ; then  # `terraform init` command will generate $HOME_DIR/pub_o11y_jam/.terraform directory 
+        terraform plan && terraform apply -auto-approve > tfapply_alb.log
+    else
+        terraform init -input=false && terraform plan && terraform apply -auto-approve  > tfapply_alb.log 
     fi
-
-    export CLUSTER_NAME=$(terraform output | grep eks_cluster_name | cut -d \" -f 2)
-    if [ -z "$CLUSTER_NAME" ]; then
-        echo "ERROR: Fail to get EKS Cluster Name."
-        return 1
-    fi
-
-    echo '>> running terraform at $WORKING_DIR complete!!'
+    echo ""
+    echo '>> running terraform complete!!'
 
 }
+
 
 kube_config(){
     echo ">> init kubectl configuration ..." && echo ""
     echo ">>> Global variable check ..." && echo ""
     if [ -z "$CLUSTER_NAME" ]; then
         echo "Error: Failed to get cluster name"
-        return 1
     fi
 
     if [ -z "$REGION" ]; then
         echo "Error: Failed to get region"
-        return 1
     fi
 
     echo ">>> CLUSTER_NAME: $CLUSTER_NAME / REGION: $REGION" && echo ""
@@ -194,14 +166,12 @@ kube_config(){
     ARN=$(aws iam get-role --role-name eks-jam-workstation-v2 --query Role.Arn --output text)
     if [ -z "$ARN" ]; then
         echo "Error: Failed to get role ARN"
-        return 1
     fi
     echo "ARN: $ARN"
 
     echo ">>> Create access entry ..." && echo ""
     if ! aws eks create-access-entry --cluster-name eks-jam --principal-arn "$ARN"; then
         echo "Error: Failed to create access entry"
-        return 1
     fi
 
     
@@ -213,13 +183,11 @@ kube_config(){
         --policy-arn arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy \
         --access-scope '{"type":"cluster"}'; then
         echo "Error: Failed to associate access policy"
-        return 1
     fi
 
     echo ">>> Updating kubeconfig ..." && echo ""
     if ! aws eks update-kubeconfig --region "$REGION" --name "$CLUSTER_NAME"; then
         echo "Error: Failed to update kubeconfig"
-        return 1
     fi
 
     if [ -d ~/.kube/ ] ; then  # `aws eks update-kubeconfig command generate '~/.kube' directory 
@@ -228,8 +196,8 @@ kube_config(){
         JAM_LABS_USER_ARN=$(aws iam list-roles --query "Roles[?starts_with(RoleName,'AWSLabsUser')].Arn" --output text)
         if [ -z "$JAM_LABS_USER_ARN" ]; then
             echo "Error: Failed to get JAM_LABS_USER_ARN"
-            return 1
         fi
+
         echo "export JAM_LABS_USER_ARN=${JAM_LABS_USER_ARN}" >> ~/.bash_profile
         echo "JAM_LABS_USER_ARN: $JAM_LABS_USER_ARN" && echo ''
 
@@ -241,12 +209,10 @@ kube_config(){
             --group system:masters \
             --region "${REGION}"; then
             echo "Error: Failed to create IAM identity mapping"
-            return 1
         fi
         echo ''
     else
         echo 'Error: kubectl config initialization failed'
-        return 1
     fi
     echo '>> Kube config initialization completed'
 }
