@@ -6,7 +6,7 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   set {
     name  = "clusterName"
-    value = data.aws_eks_cluster.cluster.name
+    value = data.terraform_remote_state.eks.outputs.eks_cluster_name
   }
 
   set {
@@ -18,8 +18,18 @@ resource "helm_release" "aws_load_balancer_controller" {
     name  = "serviceAccount.name"
     value = "aws-load-balancer-controller"
   }
+
+  set {
+    name  = "region"
+    value = data.aws_region.current.name
+  }
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = data.lb_role.arn.arn
+    value = data.terraform_remote_state.eks.outputs.lb_role_arn
+  }
+
+  set {
+    name  = "vpcId"
+    value = data.terraform_remote_state.eks.outputs.vpc_id
   }
 }

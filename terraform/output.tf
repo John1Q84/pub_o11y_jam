@@ -43,3 +43,8 @@ output "lb_role_arn" {
   description = "ARN of LB role"
   value       = module.lb_role.iam_role_arn
 }
+
+output "lb_role_name" {
+  description = "ARN of LB role"
+  value       = module.lb_role.iam_role_name
+}
