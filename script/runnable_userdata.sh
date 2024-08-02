@@ -63,14 +63,14 @@ main() {
         fi 
 
         echo ">> terraform 1st phase: Provision VPC & EKS cluster" && echo " "
-        run_terraform $HOME_DIR/terraform  
+        run_terraform $HOME_DIR/pub_o11y_jam/terraform  
         if [ $? -ne 0]; then
             echo "ERROR: 1st phase of terraform failed."
             return 1
         fi
 
         echo ">> terraform 2nd phase: Provision ALB controller on the EKS cluster" && echo " "
-        run_terraform $HOME_DIR/terraform/alb
+        run_terraform $HOME_DIR/pub_o11y_jam/terraform/alb
         if [ $? -ne 0]; then
             echo "ERROR: 2nd phase of terraform failed."
             return 1
