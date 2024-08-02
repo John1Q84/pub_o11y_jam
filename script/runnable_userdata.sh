@@ -128,6 +128,7 @@ run_terraform_vpc(){
     else
         terraform init -input=false && terraform plan && terraform apply -auto-approve  > tfapply_vpc.log 
     fi
+    export CLUSTER_NAME=$(terraform output eks_cluster_name | cut -d '"' -f 2)
     echo ""
     echo '>> running terraform complete!!'
 }
@@ -179,7 +180,7 @@ kube_config(){
         --cluster-name $CLUSTER_NAME \
         --principal-arn "$ARN" \
         --policy-arn arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy \
-        --access-scope '{"type":"cluster"}'; then
+        --access-scope '{"type": "cluster"}'; then
         echo "Error: Failed to associate access policy"
     fi
 
