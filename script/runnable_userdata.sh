@@ -50,43 +50,21 @@ main() {
     
     while true; do
 
-        install_tools
-        if [ $? -ne 0]; then
-            echo "ERROR: install_tools step failed."
-            return 1
-        fi 
+        install_tools &&
+        git_init &&
 
-        git_init
-        if [ $? -ne 0]; then
-            echo "ERROR: git_init step failed."
-            return 1
-        fi 
+        echo ">> terraform 1st phase: Provision VPC & EKS cluster" && echo " " &&
+        run_terraform $HOME_DIR/pub_o11y_jam/terraform &&  
+        
+        echo ">> terraform 2nd phase: Provision ALB controller on the EKS cluster" && echo " " &&
+        run_terraform $HOME_DIR/pub_o11y_jam/terraform/alb &&
 
-        echo ">> terraform 1st phase: Provision VPC & EKS cluster" && echo " "
-        run_terraform $HOME_DIR/pub_o11y_jam/terraform  
-        if [ $? -ne 0]; then
-            echo "ERROR: 1st phase of terraform failed."
-            return 1
-        fi
-
-        echo ">> terraform 2nd phase: Provision ALB controller on the EKS cluster" && echo " "
-        run_terraform $HOME_DIR/pub_o11y_jam/terraform/alb
-        if [ $? -ne 0]; then
-            echo "ERROR: 2nd phase of terraform failed."
-            return 1
-        fi
-
-        kube_config
-        if [ $? -ne 0]; then
-            echo "ERROR: kube_config step failed."
-            return 1
-        fi     
-
-        echo 'initializing complete !!'
-        exit 0
-
+        kube_config &&
         break
     done
+    echo 'initializing complete !!'
+
+    exit 0
 }
 
 install_tools(){
