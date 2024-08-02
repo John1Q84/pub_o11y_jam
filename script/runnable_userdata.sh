@@ -56,10 +56,11 @@ main() {
         echo ">> terraform 1st phase: Provision VPC & EKS cluster" && echo " " &&
         run_terraform $HOME_DIR/pub_o11y_jam/terraform &&  
         
+        kube_config &&
+
         echo ">> terraform 2nd phase: Provision ALB controller on the EKS cluster" && echo " " &&
         run_terraform $HOME_DIR/pub_o11y_jam/terraform/alb &&
-
-        kube_config &&
+        
         break
     done
     echo 'initializing complete !!'

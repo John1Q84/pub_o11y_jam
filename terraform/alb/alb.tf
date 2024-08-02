@@ -5,8 +5,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   namespace  = "kube-system"
 
   set {
-    name = "clusterName"
-    #value = module.eks.cluster_name
+    name  = "clusterName"
     value = data.aws_eks_cluster.cluster.name
   }
 
