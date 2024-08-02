@@ -1,16 +1,16 @@
 #!/bin/bash
 set -e
 
-echo 'get temporary token for metedata'
+echo 'get temporary token for metedata' && echo ''
 TOKEN=`curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"`
 echo ''
 
-echo '>> Get Region ....'
+echo '>> Get Region ....' && echo ''
 export REGION=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/dynamic/instance-identity/document/ | grep region | cut -d \" -f 4`
 echo "export REGION=${REGION}" >> ~/.bash_profile 
 echo $REGION && echo ''
 
-echo '>> Get instance id ....'
+echo '>> Get instance id ....' && echo ''
 export INSTANCE_ID=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/dynamic/instance-identity/document/ | grep instanceId | cut -d \" -f 4`
 echo "export INSTANCE_ID=${INSTANCE_ID}" >> ~/.bash_profile 
 echo $INSTANCE_ID && echo ''
@@ -35,7 +35,7 @@ main() {
     if [ ! -d "/opt/workspace" ] ; then
         mkdir /opt/workspace
     fi
-    echo "/opt/workspace <- home dir"
+    echo "/opt/workspace <- HOME_DIR"
     export HOME_DIR="/opt/workspace"
     cd $HOME_DIR
    
@@ -47,42 +47,46 @@ main() {
     #    kube_config &&
     #    break
     #done
-  
-    install_tools
-    if [ $? -ne 0]; then
-        echo "ERROR: install_tools step failed."
-        return 1
-    fi 
+    
+    while true; do
 
-    git_init
-    if [ $? -ne 0]; then
-        echo "ERROR: git_init step failed."
-        return 1
-    fi 
+        install_tools
+        if [ $? -ne 0]; then
+            echo "ERROR: install_tools step failed."
+            return 1
+        fi 
 
-    echo ">> terraform 1st phase: Provision VPC & EKS cluster" && echo " "
-    run_terraform $HOME_DIR/terraform  
-    if [ $? -ne 0]; then
-        echo "ERROR: 1st phase of terraform failed."
-        return 1
-    fi
+        git_init
+        if [ $? -ne 0]; then
+            echo "ERROR: git_init step failed."
+            return 1
+        fi 
 
-    echo ">> terraform 2nd phase: Provision ALB controller on the EKS cluster" && echo " "
-    run_terraform $HOME_DIR/terraform/alb
-    if [ $? -ne 0]; then
-        echo "ERROR: 2nd phase of terraform failed."
-        return 1
-    fi
+        echo ">> terraform 1st phase: Provision VPC & EKS cluster" && echo " "
+        run_terraform $HOME_DIR/terraform  
+        if [ $? -ne 0]; then
+            echo "ERROR: 1st phase of terraform failed."
+            return 1
+        fi
 
-    kube_config
-    if [ $? -ne 0]; then
-        echo "ERROR: kube_config step failed."
-        return 1
-    fi     
+        echo ">> terraform 2nd phase: Provision ALB controller on the EKS cluster" && echo " "
+        run_terraform $HOME_DIR/terraform/alb
+        if [ $? -ne 0]; then
+            echo "ERROR: 2nd phase of terraform failed."
+            return 1
+        fi
 
-    echo 'initializing complete !!'
-    exit 0
+        kube_config
+        if [ $? -ne 0]; then
+            echo "ERROR: kube_config step failed."
+            return 1
+        fi     
 
+        echo 'initializing complete !!'
+        exit 0
+
+        break
+    done
 }
 
 install_tools(){
@@ -103,7 +107,7 @@ install_tools(){
     sudo yum -y install terraform
 
     # Update awscli v1, just in case it's required
-    pip install --user --upgrade awscli
+    # pip install --user --upgrade awscli
 
     # Install awscli v2
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
