@@ -8,10 +8,14 @@ output "vpc_id" {
   value       = module.vpc.vpc_id
 }
 
+output "eks_cluster_id" {
+  description = "ID of eks cluster"
+  value       = module.eks.cluster_id
+}
+
 output "eks_cluster_name" {
-  description = "Name of eks cluster"
-  #value       = module.eks_blueprints.eks_cluster_id
-  value = module.eks.cluster_id
+  description = "Name of the eks cluster"
+  value       = module.eks.cluster_name
 }
 
 output "eks_oidc_provider_arn" {
@@ -22,4 +26,10 @@ output "eks_oidc_provider_arn" {
 output "eks_oidc_provider" {
   description = "url of EKS OIDC provider, with out 'https'"
   value       = module.eks.oidc_provider
+}
+
+
+output "lb_role_arn" {
+  description = "ARN of LB role"
+  value       = module.lb_role.iam_role_arn
 }

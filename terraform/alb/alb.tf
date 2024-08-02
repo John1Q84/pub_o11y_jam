@@ -5,8 +5,9 @@ resource "helm_release" "aws_load_balancer_controller" {
   namespace  = "kube-system"
 
   set {
-    name  = "clusterName"
-    value = module.eks.cluster_name
+    name = "clusterName"
+    #value = module.eks.cluster_name
+    value = data.aws_eks_cluster.cluster.name
   }
 
   set {
@@ -20,6 +21,6 @@ resource "helm_release" "aws_load_balancer_controller" {
   }
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.lb_role.iam_role_arn
+    value = data.lb_role.arn.arn
   }
 }

@@ -152,9 +152,9 @@ run_terraform(){
     echo ">>> running terraform from $WORKING_DIR" 
 
     if [ -d $WORKING_DIR/.terraform ] ; then  # `terraform init` command will generate $HOME_DIR/pub_o11y_jam/terraform/.terraform directory
-        terraform plan && terraform apply -auto-approve > tfapply.log 2>&1
+        (terraform plan && terraform apply -auto-approve) 2>&1 | tee tfapply.log
     else
-        terraform init -input=false && terraform plan && terraform apply -auto-approve  > tfapply.log 2>&1
+        (terraform init -input=false && terraform plan && terraform apply -auto-approve ) 2>&1  | tee tfapply.log
     fi
 
     if [ $? -ne 0 ]; then
