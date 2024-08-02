@@ -47,7 +47,9 @@ main() {
     ### 수정필요
     echo ">> terraform 1st phase: Provision VPC & EKS cluster" && echo ""
     run_terraform_vpc $HOME_DIR/pub_o11y_jam/terraform 
-    kube_config &&
+    kube_config > $HOME_DIR/pub_o11y_jam/kubeconfig.log && 
+    #curl -s https://raw.githubusercontent.com/John1Q84/pub_o11y_jam/main/script/kube_init.sh | /bin/bash
+     
     run_terraform_alb $HOME_DIR/pub_o11y_jam/terraform/alb 
 
     echo '>> Initializing complete !!' && echo ""
