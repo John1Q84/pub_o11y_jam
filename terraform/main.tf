@@ -71,7 +71,8 @@ module "eks" {
     }
   }
 
-  cluster_enabled_log_types = [] ## Controle Plane monitoring 기능 모두 해제
+  cluster_enabled_log_types   = [] ## Controle Plane monitoring 기능 모두 해제
+  create_cloudwatch_log_group = false
 
   tags = {
     Terraform   = "true"

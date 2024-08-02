@@ -122,7 +122,6 @@ git_init(){
 run_terraform_vpc(){
     local dir=$1
     echo '>> terraform init & apply step ...'    
-    #cd $HOME_DIR/pub_o11y_jam/
     cd $dir
     if [ -d $dir/.terraform ] ; then  # `terraform init` command will generate $HOME_DIR/pub_o11y_jam/.terraform directory 
         terraform plan && terraform apply -auto-approve > tfapply_vpc.log
@@ -136,7 +135,6 @@ run_terraform_vpc(){
 run_terraform_alb(){
     local dir=$1
     echo '>> terraform init & apply step ...'    
-    #cd $HOME_DIR/pub_o11y_jam/
     cd $dir
     if [ -d $dir/.terraform ] ; then  # `terraform init` command will generate $HOME_DIR/pub_o11y_jam/.terraform directory 
         terraform plan && terraform apply -auto-approve > tfapply_alb.log
