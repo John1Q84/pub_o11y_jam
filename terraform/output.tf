@@ -13,6 +13,16 @@ output "eks_cluster_id" {
   value       = module.eks.cluster_id
 }
 
+output "eks_cluster_endpoint" {
+  description = "ID of eks cluster"
+  value       = module.eks.cluster_endpoint
+}
+
+output "eks_cluster_ca_data" {
+  description = "ID of eks cluster"
+  value       = module.eks.cluster_certificate_authority_data
+}
+
 output "eks_cluster_name" {
   description = "Name of the eks cluster"
   value       = module.eks.cluster_name
